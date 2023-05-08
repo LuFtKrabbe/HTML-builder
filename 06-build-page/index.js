@@ -25,7 +25,7 @@ async function buildHtml() {
       console.log('Next files are written in index.html:');
       for (const file of files) {
         if (file.isFile() && (path.extname(file.name).slice(1) == 'html')) {
-          console.log(`- ${file.name}`);
+          console.log(`- ${file.name};`);
           let fileName = file.name.slice(0, file.name.indexOf('.'));
           obj[`{{${fileName}}}`] = file.name;
         }
@@ -35,7 +35,7 @@ async function buildHtml() {
   for (let key in obj) {
     const pathToCurrentComponent = path.join(pathToComponentsFolder, obj[key]);
     const currentComponent = await fsPromises.readFile(pathToCurrentComponent, { encoding: 'utf-8' });
-    template = template.replace(key, currentComponent);
+    template = template.replaceAll(key, currentComponent);
   }
  
   await fsPromises.appendFile(pathToDistIndexFile, template);
@@ -49,7 +49,7 @@ async function buildCss() {
       console.log('Next files are written in bundle.css:');
       for (const file of files) {
         if (file.isFile() && (path.extname(file.name).slice(1) == 'css')) {
-          console.log(`- ${file.name}`);
+          console.log(`- ${file.name};`);
           const pathToCurrentStyleFile = path.join(pathToStylesFolder, file.name);
           const styleReadStream = fs.createReadStream(pathToCurrentStyleFile, 'utf-8');
           styleReadStream.pipe(styleWriteStream);
@@ -79,4 +79,5 @@ fsPromises.rm(pathToDistFolder, { force: true, recursive: true })
     buildHtml();
     buildCss();
     copyDir(pathToAssetsFolder, pathToDistAssetsFolder);
+    console.log('All files from assets are copied;');
   });
