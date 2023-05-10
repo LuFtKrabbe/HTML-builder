@@ -16,12 +16,18 @@ stdin.on('data', data => {
     if (err) throw (err.message);
   });
   stdout.write('Введите следующую строку:\n');
-  if (data.toString().trim() === 'exit') {
-    process.on('exit', () => {
-      stdout.write(data);
-      stdout.write(`Запись в файл ${fileName} закончена.\n`);
-      stdout.write('Доброго времени суток и успехов в изучении Node.js!\n');
-    });
-    process.exit();
+  if (data.toString().trim() === 'exit') {    
+    process.emit('close', data);
   }
 });
+
+process.on('close', (data) => {
+    stdout.write(data);
+    stdout.write(`Запись в файл ${fileName} закончена.\n`);
+    stdout.write('Доброго времени суток и успехов в изучении Node.js!\n');
+    process.exit();
+});
+
+process.on('SIGINT', () => {
+    process.emit('close', '');
+})
